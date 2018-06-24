@@ -1,7 +1,5 @@
 const cheerio = require('cheerio');
 const moment = require('moment');
-
-
 function extractListingsFromHTML (html) {
   const $ = cheerio.load(html);
 
@@ -12,16 +10,16 @@ function extractListingsFromHTML (html) {
   let j = 0
   let csv = ""
   inside_values.each((i,el)=>{
-
+    let value = $(el).text().trim().replace(/[^aA-zZ0-9.-]/g, "");
     if (i < 6 ) {
       let column = {}
       let name = "column_" + i;
-      column[name] = $(el).text().trim();
+      column[name] = value;
       table.push(column)
     } else if (count < 7) {
       let row = {}
       let name = "row_"+j;
-      row[name] = $(el).text().trim();
+      row[name] = value;
       table.push(row)
       count += 1
 
@@ -33,9 +31,9 @@ function extractListingsFromHTML (html) {
     }
 
     if ((i + 1)% 6 == 0) {
-      csv += $(el).text().trim() + "\n"
+      csv += value + "\n"
     } else {
-      csv += $(el).text().trim() + ","
+      csv += value + ","
     }
        
 

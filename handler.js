@@ -1,14 +1,18 @@
 const request = require('axios');
 const {extractListingsFromHTML} = require('./helpers');
+const moment = require('moment');
 const fs = require('fs');
 const AWS = require('aws-sdk');
 
-
-
 module.exports.rates = (event, context, callback) => {
 
+  const date = moment().format('MM-DD-YYYY');
+  const file_ext = ".csv";
+  const folder = 'rates/'
+  const file_name = folder+date+file_ext;
+
   function csv(table) {
-    fs.writeFile("./table.csv", table.csv, function(err) {
+    fs.writeFile(file_name, table.csv, function(err) {
         if(err) {
             return console.log(err);
         }
@@ -35,7 +39,7 @@ module.exports.rates = (event, context, callback) => {
 
       const table = extractListingsFromHTML(data);
       csv(table);
-      putObjectToS3('global-rates','table.csv',table.csv)
+      putObjectToS3('global-rates',file_name,table.csv)
       callback(null, table);
     })
     .catch(callback);
